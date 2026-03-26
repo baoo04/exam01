@@ -1,0 +1,199 @@
+networks:
+  ecommerce_net:
+    driver: bridge
+
+volumes:
+  pg_data:
+  mysql_data:
+
+services:
+
+  postgres_db:
+    image: postgres:16-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ./init-postgres.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5433:5432"
+    networks:
+      - ecommerce_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  mysql_db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./init-mysql.sql:/docker-entrypoint-initdb.d/init.sql
+    # Host:container — use a high port so it never clashes with MySQL on the host (3306).
+    # Django services use hostname mysql_db and in-container port 3306; they ignore this mapping.
+    ports:
+      - "13306:3306"
+    networks:
+      - ecommerce_net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p${MYSQL_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  laptop_service:
+    build: ./services/laptop_service
+    restart: always
+    ports:
+      - "8001:8001"
+    env_file: ./services/laptop_service/.env
+    environment:
+      DB_HOST: postgres_db
+    depends_on:
+      postgres_db:
+        condition: service_healthy
+    networks:
+      - ecommerce_net
+
+  mobile_service:
+    build: ./services/mobile_service
+    restart: always
+    ports:
+      - "8002:8002"
+    env_file: ./services/mobile_service/.env
+    environment:
+      DB_HOST: postgres_db
+    depends_on:
+      postgres_db:
+        condition: service_healthy
+    networks:
+      - ecommerce_net
+
+  clothes_service:
+    build: ./services/clothes_service
+    restart: always
+    ports:
+      - "8008:8008"
+    env_file: ./services/clothes_service/.env
+    environment:
+      DB_HOST: postgres_db
+    depends_on:
+      postgres_db:
+        condition: service_healthy
+    networks:
+      - ecommerce_net
+
+  customer_service:
+    build: ./services/customer_service
+    restart: always
+    ports:
+      - "8003:8003"
+    env_file: ./services/customer_service/.env
+    environment:
+      DB_HOST: mysql_db
+    depends_on:
+      mysql_db:
+        condition: service_healthy
+    networks:
+      - ecommerce_net
+
+  staff_service:
+    build: ./services/staff_service
+    restart: always
+    ports:
+      - "8004:8004"
+    env_file: ./services/staff_service/.env
+    environment:
+      DB_HOST: mysql_db
+    depends_on:
+      mysql_db:
+        condition: service_healthy
+    networks:
+      - ecommerce_net
+
+  order_service:
+    build: ./services/order_service
+    restart: always
+    ports:
+      - "8005:8005"
+    env_file: ./services/order_service/.env
+    environment:
+      DB_HOST: mysql_db
+    depends_on:
+      mysql_db:
+        condition: service_healthy
+    networks:
+      - ecommerce_net
+
+  cart_service:
+    build: ./services/cart_service
+    restart: always
+    ports:
+      - "8006:8006"
+    env_file: ./services/cart_service/.env
+    environment:
+      DB_HOST: mysql_db
+    depends_on:
+      mysql_db:
+        condition: service_healthy
+    networks:
+      - ecommerce_net
+
+  shipping_service:
+    build: ./services/shipping_service
+    restart: always
+    ports:
+      - "8007:8007"
+    env_file: ./services/shipping_service/.env
+    environment:
+      DB_HOST: mysql_db
+    depends_on:
+      mysql_db:
+        condition: service_healthy
+    networks:
+      - ecommerce_net
+
+  # API Gateway — Django microservice: health + route catalog (mock). Cổng host 8090.
+  api_gateway:
+    build: ./api-gateway
+    restart: always
+    ports:
+      - "8090:80"
+    environment:
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:-django-insecure-api-gateway-only}
+      DJANGO_DEBUG: "True"
+      DJANGO_ALLOWED_HOSTS: localhost,127.0.0.1,api_gateway,[::1]
+    depends_on:
+      - laptop_service
+      - mobile_service
+      - clothes_service
+      - customer_service
+      - staff_service
+      - order_service
+      - cart_service
+      - shipping_service
+    networks:
+      - ecommerce_net
+
+  frontend:
+    build: ./frontend
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - laptop_service
+      - mobile_service
+      - clothes_service
+      - customer_service
+      - staff_service
+      - order_service
+      - cart_service
+      - shipping_service
+    networks:
+      - ecommerce_net

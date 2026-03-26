@@ -1,0 +1,3 @@
+CREATE DATABASE laptop_db;
+CREATE DATABASE mobile_db;
+CREATE DATABASE clothes_db;
