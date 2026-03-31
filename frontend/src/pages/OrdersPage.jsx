@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 import * as orderApi from "../api/orderApi";
-import { DataTable } from "../components/DataTable";
 import { ErrorMessage } from "../components/ErrorMessage";
 import { LoadingSpinner } from "../components/LoadingSpinner";
+import { SearchBar } from "../components/SearchBar";
 import { StatusBadge } from "../components/StatusBadge";
 import { formatVnd } from "../utils/formatVnd";
 
@@ -34,7 +34,7 @@ export default function OrdersPage() {
           setError(
             e?.response?.data?.detail ||
               e.message ||
-              "Không kết nối được order service."
+              "Không thể tải đơn hàng qua API Gateway."
           );
       } finally {
         if (!cancelled) setLoading(false);
@@ -46,74 +46,16 @@ export default function OrdersPage() {
     };
   }, [q, refreshKey]);
 
-  const columns = [
-    {
-      key: "id",
-      header: "Mã đơn",
-      render: (r) => (
-        <span className="font-mono text-xs text-slate-600">
-          {String(r.id).slice(0, 8)}…
-        </span>
-      ),
-    },
-    {
-      key: "customer_id",
-      header: "Khách (UUID)",
-      render: (r) => (
-        <span className="font-mono text-xs text-slate-600">
-          {String(r.customer_id).slice(0, 8)}…
-        </span>
-      ),
-    },
-    {
-      key: "total_amount",
-      header: "Tổng",
-      render: (r) => formatVnd(r.total_amount),
-    },
-    {
-      key: "status",
-      header: "Trạng thái",
-      render: (r) => <StatusBadge label={r.status} variant="order" />,
-    },
-    {
-      key: "payment_method",
-      header: "Thanh toán",
-      render: (r) => (
-        <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-800 ring-1 ring-slate-200">
-          {r.payment_method}
-        </span>
-      ),
-    },
-    {
-      key: "payment_status",
-      header: "TT thanh toán",
-      render: (r) => <StatusBadge label={r.payment_status} variant="payment" />,
-    },
-    {
-      key: "items",
-      header: "Sản phẩm",
-      render: (r) => (
-        <ul className="max-w-xs space-y-1 text-xs text-slate-700">
-          {(r.items || []).map((it) => (
-            <li key={it.id}>
-              <span className="font-medium">{it.product_name}</span>
-              <span className="text-slate-500">
-                {" "}
-                ×{it.quantity} · {it.product_type}
-              </span>
-            </li>
-          ))}
-        </ul>
-      ),
-    },
-  ];
-
   return (
     <div className="space-y-6">
-      <header>
+      <header className="space-y-2">
         <h1 className="text-2xl font-bold text-slate-900">Đơn hàng</h1>
-        <p className="text-sm text-slate-500">Dịch vụ cổng 8005</p>
+        <p className="text-sm text-slate-500">Theo dõi đơn hàng qua API Gateway</p>
       </header>
+      <SearchBar
+        onSearch={onSearch}
+        placeholder="Địa chỉ, trạng thái, phương thức thanh toán..."
+      />
       {error ? (
         <ErrorMessage
           message={error}
@@ -121,13 +63,53 @@ export default function OrdersPage() {
         />
       ) : null}
       {loading ? <LoadingSpinner /> : null}
-      {!loading && !error ? (
-        <DataTable
-          columns={columns}
-          data={rows}
-          onSearch={onSearch}
-          searchPlaceholder="Địa chỉ, trạng thái, phương thức…"
-        />
+      {!loading && !error && rows.length === 0 ? (
+        <div className="rounded-xl border border-slate-200 bg-white p-8 text-center text-slate-500 shadow-sm">
+          Không có đơn hàng phù hợp.
+        </div>
+      ) : null}
+      {!loading && !error && rows.length > 0 ? (
+        <div className="grid gap-4 md:grid-cols-2">
+          {rows.map((r) => (
+            <article
+              key={r.id}
+              className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
+            >
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <p className="font-mono text-xs text-slate-500">
+                  Đơn #{String(r.id).slice(0, 8)}…
+                </p>
+                <StatusBadge label={r.status} variant="order" />
+              </div>
+              <p className="mt-1 text-sm text-slate-600">
+                Khách:{" "}
+                <span className="font-mono text-xs">
+                  {String(r.customer_id).slice(0, 8)}…
+                </span>
+              </p>
+              <div className="mt-3 flex items-center justify-between">
+                <p className="text-lg font-semibold text-slate-900">
+                  {formatVnd(r.total_amount)}
+                </p>
+                <StatusBadge label={r.payment_status} variant="payment" />
+              </div>
+              <p className="mt-1 text-xs text-slate-500">{r.payment_method}</p>
+              <div className="mt-3 space-y-2">
+                {(r.items || []).map((it) => (
+                  <div
+                    key={it.id}
+                    className="rounded-lg bg-slate-50 px-3 py-2 text-xs text-slate-700"
+                  >
+                    <span className="font-medium text-slate-900">
+                      {it.product_name}
+                    </span>{" "}
+                    ×{it.quantity} · {it.product_type}
+                  </div>
+                ))}
+              </div>
+            </article>
+          ))}
+        </div>
       ) : null}
     </div>
   );

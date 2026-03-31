@@ -73,18 +73,22 @@ docker exec -it $(docker compose ps -q mysql_db) mysql -uroot -p -e "SHOW DATABA
 | Ứng dụng | URL |
 |----------|-----|
 | Frontend (Nginx) | http://localhost |
-| Laptops API | http://localhost:8001/api/laptops/ |
-| Mobiles API | http://localhost:8002/api/mobiles/ |
-| Clothes API | http://localhost:8008/api/clothes/ |
-| Customers API | http://localhost:8003/api/customers/ |
-| Staff API | http://localhost:8004/api/staff/ |
-| Orders API | http://localhost:8005/api/orders/ |
-| Cart API | http://localhost:8006/api/cart/ |
-| Shipping API | http://localhost:8007/api/shipping/ |
-| Health (mỗi service) | `GET /api/health/` |
-| **API Gateway** (Django: health + catalog route mock) | http://localhost:8090/ — ` /api/health/`, ` /api/gateway/catalog/`, ` /api/gateway/matrix/` |
+| **API Gateway (public API entrypoint)** | http://localhost:8090/ |
+| Gateway health | http://localhost:8090/api/health/ |
+| Gateway route catalog | http://localhost:8090/api/gateway/catalog/ |
+| Gateway routing matrix | http://localhost:8090/api/gateway/matrix/ |
+| Laptops (via gateway) | http://localhost:8090/api/laptops/ |
+| Mobiles (via gateway) | http://localhost:8090/api/mobiles/ |
+| Clothes (via gateway) | http://localhost:8090/api/clothes/ |
+| Customers (via gateway) | http://localhost:8090/api/customers/ |
+| Staff (via gateway) | http://localhost:8090/api/staff/ |
+| Orders (via gateway) | http://localhost:8090/api/orders/ |
+| Cart (via gateway) | http://localhost:8090/api/cart/ |
+| Shipping (via gateway) | http://localhost:8090/api/shipping/ |
+| Customer auth (via gateway) | `POST /api/auth/customer/login/`, `GET /api/auth/customer/me/` |
+| Staff auth (via gateway) | `POST /api/auth/staff/login/`, `GET /api/auth/staff/me/` |
 
-Nginx trong container `frontend` reverse proxy `/api/...` tới từng service (cùng origin với UI). Thư mục **`api-gateway/`** là service **`api_gateway`** (Compose): chỉ định tuyến API, phù hợp ghi vào sơ đồ “client → API Gateway → microservices”. Chi tiết và bảng route: `api-gateway/README.md`.
+Frontend gọi API trực tiếp qua `api_gateway` (`localhost:8090`) theo mô hình `Browser → API Gateway → Microservices`. Các service cổng `8001..8008` vẫn tồn tại để debug nội bộ khi cần, nhưng không còn là điểm gọi chính từ UI.
 
 ## Run without Docker (manual)
 
@@ -109,14 +113,20 @@ npm install
 npm run dev
 ```
 
-Mở http://localhost:5173 — các file `src/api/*.js` trỏ tới `http://localhost:8001` … `8008` (CORS đã bật cho `5173` và `localhost`).
+Mở http://localhost:5173 — frontend gọi API qua gateway:
+
+- Mặc định: `http://localhost:8090/api`
+- Có thể override bằng biến môi trường: `VITE_GATEWAY_BASE_URL`
 
 ### Chức năng tương tác (UI)
 
 - **Đăng nhập / đăng ký**: `/login`, `/dang-ky` (khách hàng). Sidebar có Đăng xuất khi đã đăng nhập.
 - **Khách**: sau khi đăng nhập, trang Laptop / Điện thoại / **Quần áo** (`/clothes`) có nút **Thêm vào giỏ**; trang **Giỏ hàng** chỉ hiển thị giỏ của tài khoản đó.
 - **Nhân viên (kho)**: đăng nhập tab *Nhân viên* → menu **Kho laptop** / **Kho điện thoại** / **Kho quần áo** (`/staff/kho-laptop`, `/staff/kho-mobile`, `/staff/kho-clothes`): thêm / sửa / xóa sản phẩm, **Nhập kho** (cộng/trừ tồn qua API `receive-stock`).
-- **API đăng nhập**: `POST /api/auth/login/` trên **staff_service** (8004) và **customer_service** (8003), body JSON `{ "email", "password" }`.
+- **API đăng nhập qua gateway**:
+  - Khách hàng: `POST /api/auth/customer/login/`
+  - Nhân viên: `POST /api/auth/staff/login/`
+  - Body JSON: `{ "email", "password" }`
 
 **Tài khoản demo (sau `seed_data`):**
 

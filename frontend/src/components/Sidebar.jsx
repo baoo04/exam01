@@ -2,14 +2,17 @@ import { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
-const LINKS = [
+const SHOPPING_LINKS = [
   { to: "/laptops", label: "Laptop", icon: "💻" },
   { to: "/mobiles", label: "Điện thoại", icon: "📱" },
   { to: "/clothes", label: "Quần áo", icon: "👕" },
+  { to: "/cart", label: "Giỏ hàng", icon: "🛒" },
+];
+
+const OPERATIONS_LINKS = [
   { to: "/customers", label: "Khách hàng", icon: "👤" },
   { to: "/staff", label: "Nhân viên", icon: "🧑‍💼" },
   { to: "/orders", label: "Đơn hàng", icon: "📦" },
-  { to: "/cart", label: "Giỏ hàng", icon: "🛒" },
   { to: "/shipping", label: "Vận chuyển", icon: "🚚" },
 ];
 
@@ -47,7 +50,7 @@ export function Sidebar() {
         <div className="flex h-full flex-col border-r border-slate-700/50">
           <div className="border-b border-slate-700/50 px-5 py-6">
             <p className="text-lg font-bold tracking-tight">E‑Commerce</p>
-            <p className="text-xs text-slate-400">Microservices</p>
+            <p className="text-xs text-slate-400">API Gateway</p>
             {isStaff && staff ? (
               <p className="mt-2 truncate text-xs text-emerald-300">
                 NV: {staff.full_name}
@@ -60,7 +63,10 @@ export function Sidebar() {
             ) : null}
           </div>
           <nav className="flex-1 space-y-1 overflow-y-auto px-2 py-4">
-            {LINKS.map((l) => (
+            <p className="px-3 pb-1 text-[10px] font-semibold uppercase tracking-wider text-slate-500">
+              Khu mua sắm
+            </p>
+            {SHOPPING_LINKS.map((l) => (
               <NavLink
                 key={l.to}
                 to={l.to}
@@ -79,6 +85,30 @@ export function Sidebar() {
                 {l.label}
               </NavLink>
             ))}
+            <div className="border-t border-slate-600/50 pt-3 mt-3">
+              <p className="px-3 pb-1 text-[10px] font-semibold uppercase tracking-wider text-slate-500">
+                Khu vận hành
+              </p>
+              {OPERATIONS_LINKS.map((l) => (
+                <NavLink
+                  key={l.to}
+                  to={l.to}
+                  onClick={() => setOpen(false)}
+                  className={({ isActive }) =>
+                    `flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition ${
+                      isActive
+                        ? "bg-sky-600 text-white shadow-inner"
+                        : "text-slate-200 hover:bg-slate-700/60"
+                    }`
+                  }
+                >
+                  <span className="text-lg" aria-hidden>
+                    {l.icon}
+                  </span>
+                  {l.label}
+                </NavLink>
+              ))}
+            </div>
             {isStaff ? (
               <div className="border-t border-slate-600/50 pt-3 mt-3">
                 <p className="px-3 pb-1 text-[10px] font-semibold uppercase tracking-wider text-slate-500">

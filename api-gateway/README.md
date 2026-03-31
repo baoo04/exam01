@@ -1,8 +1,6 @@
-# API Gateway — Django microservice (mock)
+# API Gateway — Django microservice
 
-Service **Django 4 + Django REST Framework**, tách riêng khỏi `frontend`, mô phỏng **microservice gateway** trong đồ án: healthcheck, **catalog route** (DB + API), ma trận routing tĩnh, Django Admin, lệnh `seed_routes`.
-
-> Proxy HTTP thật sang `laptop_service:8001` … có thể thêm sau (Nginx sidecar / middleware). Phạm vi hiện tại: **đủ cấu trúc & endpoint để chụp hình / báo cáo**.
+Service **Django 4 + Django REST Framework**, tách riêng khỏi `frontend`, đóng vai trò **API Gateway**: healthcheck, **catalog route** (DB + API), ma trận routing tĩnh, Django Admin, lệnh `seed_routes`, và proxy request tới upstream services.
 
 ## Cấu trúc thư mục
 
@@ -50,6 +48,11 @@ python manage.py test routing
 | `GET /api/health/` | Health (thống nhất kiểu microservice) |
 | `GET /api/gateway/matrix/` | Ma trận route mock (`upstream_registry.py`) |
 | `GET /api/gateway/catalog/` | Route đã seed trong DB (Read-only API) |
+| `POST /api/auth/customer/login/` | Alias auth customer (proxy sang `customer_service`) |
+| `GET /api/auth/customer/me/` | Alias auth customer (proxy sang `customer_service`) |
+| `POST /api/auth/staff/login/` | Alias auth staff (proxy sang `staff_service`) |
+| `GET /api/auth/staff/me/` | Alias auth staff (proxy sang `staff_service`) |
+| `/api/<service-prefix>/...` | Proxy request tới upstream tương ứng |
 | `/admin/` | Quản lý `GatewayRoute` |
 
 ## Bảng ánh xạ (cùng hệ thống)

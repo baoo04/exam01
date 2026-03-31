@@ -15,6 +15,8 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [err, setErr] = useState("");
   const [loading, setLoading] = useState(false);
+  const emailInvalid = email.length > 0 && !email.includes("@");
+  const passwordInvalid = password.length > 0 && password.length < 6;
 
   async function onSubmit(e) {
     e.preventDefault();
@@ -77,9 +79,16 @@ export default function LoginPage() {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2"
+            className={`mt-1 w-full rounded-lg border px-3 py-2 ${
+              emailInvalid ? "border-red-400" : "border-slate-300"
+            }`}
             placeholder={tab === "staff" ? "nguyenquochuy@shop.vn" : "nguyenvanan@example.com"}
           />
+          {emailInvalid ? (
+            <p className="mt-1 text-xs text-red-700">
+              Email chưa đúng định dạng.
+            </p>
+          ) : null}
         </label>
         <label className="block text-sm font-medium text-slate-700">
           Mật khẩu
@@ -88,13 +97,18 @@ export default function LoginPage() {
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2"
+            className={`mt-1 w-full rounded-lg border px-3 py-2 ${
+              passwordInvalid ? "border-red-400" : "border-slate-300"
+            }`}
             placeholder={tab === "staff" ? "Staff@123" : "Khach@123"}
           />
+          {passwordInvalid ? (
+            <p className="mt-1 text-xs text-red-700">Mật khẩu cần ít nhất 6 ký tự.</p>
+          ) : null}
         </label>
         <button
           type="submit"
-          disabled={loading}
+          disabled={loading || emailInvalid || passwordInvalid}
           className="w-full rounded-lg bg-sky-600 py-2.5 font-medium text-white hover:bg-sky-700 disabled:opacity-60"
         >
           {loading ? "Đang xử lý…" : "Đăng nhập"}

@@ -17,6 +17,8 @@ export default function RegisterPage() {
   });
   const [err, setErr] = useState("");
   const [loading, setLoading] = useState(false);
+  const emailInvalid = form.email.length > 0 && !form.email.includes("@");
+  const passwordInvalid = form.password.length > 0 && form.password.length < 6;
 
   function set(k, v) {
     setForm((f) => ({ ...f, [k]: v }));
@@ -81,8 +83,15 @@ export default function RegisterPage() {
             required
             value={form.email}
             onChange={(e) => set("email", e.target.value)}
-            className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2"
+            className={`mt-1 w-full rounded-lg border px-3 py-2 ${
+              emailInvalid ? "border-red-400" : "border-slate-300"
+            }`}
           />
+          {emailInvalid ? (
+            <p className="mt-1 text-xs text-red-700">
+              Email chưa đúng định dạng.
+            </p>
+          ) : null}
         </label>
         <label className="block text-sm font-medium text-slate-700">
           Mật khẩu (≥ 6 ký tự)
@@ -92,8 +101,13 @@ export default function RegisterPage() {
             minLength={6}
             value={form.password}
             onChange={(e) => set("password", e.target.value)}
-            className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2"
+            className={`mt-1 w-full rounded-lg border px-3 py-2 ${
+              passwordInvalid ? "border-red-400" : "border-slate-300"
+            }`}
           />
+          {passwordInvalid ? (
+            <p className="mt-1 text-xs text-red-700">Mật khẩu cần ít nhất 6 ký tự.</p>
+          ) : null}
         </label>
         <label className="block text-sm font-medium text-slate-700">
           Điện thoại
@@ -146,7 +160,7 @@ export default function RegisterPage() {
         </label>
         <button
           type="submit"
-          disabled={loading}
+          disabled={loading || emailInvalid || passwordInvalid}
           className="w-full rounded-lg bg-emerald-600 py-2.5 font-medium text-white hover:bg-emerald-700 disabled:opacity-60"
         >
           {loading ? "Đang xử lý…" : "Tạo tài khoản"}

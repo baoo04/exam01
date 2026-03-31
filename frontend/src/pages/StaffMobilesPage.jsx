@@ -123,7 +123,7 @@ export default function StaffMobilesPage() {
       <header className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Quản lý điện thoại &amp; nhập kho</h1>
-          <p className="text-sm text-slate-500">Thêm / sửa / nhập tồn / xóa — API cổng 8002</p>
+          <p className="text-sm text-slate-500">Thêm / sửa / nhập tồn / xóa — qua API Gateway</p>
         </div>
         <button
           type="button"

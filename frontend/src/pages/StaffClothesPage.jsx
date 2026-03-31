@@ -108,7 +108,7 @@ export default function StaffClothesPage() {
             Quản lý quần áo &amp; nhập kho
           </h1>
           <p className="text-sm text-slate-500">
-            Thêm / sửa / nhập tồn / xóa — API cổng 8008 (PostgreSQL)
+            Thêm / sửa / nhập tồn / xóa — qua API Gateway
           </p>
         </div>
         <button

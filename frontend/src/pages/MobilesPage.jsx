@@ -51,7 +51,7 @@ export default function MobilesPage() {
           setError(
             e?.response?.data?.detail ||
               e.message ||
-              "Không kết nối được mobile service."
+              "Không tải được điện thoại qua API Gateway."
           );
       } finally {
         if (!cancelled) setLoading(false);
@@ -92,7 +92,7 @@ export default function MobilesPage() {
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Điện thoại</h1>
           <p className="text-sm text-slate-500">
-            Dịch vụ cổng 8002 — đăng nhập khách để thêm vào giỏ.
+            Dữ liệu điện thoại qua API Gateway — đăng nhập khách để thêm vào giỏ.
           </p>
         </div>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">

@@ -51,7 +51,7 @@ export default function CartPage() {
           setError(
             e?.response?.data?.detail ||
               e.message ||
-              "Không kết nối được cart service."
+              "Không thể tải giỏ hàng qua API Gateway."
           );
       } finally {
         if (!cancelled) setLoading(false);
@@ -134,7 +134,7 @@ export default function CartPage() {
       <header>
         <h1 className="text-2xl font-bold text-slate-900">Giỏ hàng của bạn</h1>
         <p className="text-sm text-slate-500">
-          Xin chào <strong>{customer.full_name}</strong> — dịch vụ cổng 8006
+          Xin chào <strong>{customer.full_name}</strong> — giỏ hàng qua API Gateway
         </p>
       </header>
       {error ? (

@@ -1,14 +1,15 @@
 import axios from "axios";
+import { API_BASE_URL } from "./baseUrl";
 
-const api = axios.create({ baseURL: "http://localhost:8003/api" });
+const api = axios.create({ baseURL: API_BASE_URL });
 
 export async function login(email, password) {
-  const { data } = await api.post("/auth/login/", { email, password });
+  const { data } = await api.post("/auth/customer/login/", { email, password });
   return data;
 }
 
 export async function me(token) {
-  const { data } = await api.get("/auth/me/", {
+  const { data } = await api.get("/auth/customer/me/", {
     headers: { Authorization: `Bearer ${token}` },
   });
   return data;
