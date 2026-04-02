@@ -52,7 +52,7 @@ export default function LaptopsPage() {
           setError(
             e?.response?.data?.detail ||
               e.message ||
-              "Không tải được laptop qua API Gateway."
+              "Không kết nối được laptop service."
           );
       } finally {
         if (!cancelled) setLoading(false);
@@ -92,7 +92,7 @@ export default function LaptopsPage() {
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Laptop</h1>
           <p className="text-sm text-slate-500">
-            Sản phẩm laptop qua API Gateway — đăng nhập khách để thêm vào giỏ.
+            Sản phẩm từ dịch vụ cổng 8001 — đăng nhập khách để thêm vào giỏ.
           </p>
         </div>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">

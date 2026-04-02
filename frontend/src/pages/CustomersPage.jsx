@@ -32,7 +32,7 @@ export default function CustomersPage() {
           setError(
             e?.response?.data?.detail ||
               e.message ||
-              "Không thể tải khách hàng qua API Gateway."
+              "Không kết nối được customer service."
           );
       } finally {
         if (!cancelled) setLoading(false);
@@ -61,7 +61,7 @@ export default function CustomersPage() {
     <div className="space-y-6">
       <header>
         <h1 className="text-2xl font-bold text-slate-900">Khách hàng</h1>
-        <p className="text-sm text-slate-500">Dữ liệu khách hàng qua API Gateway</p>
+        <p className="text-sm text-slate-500">Dịch vụ cổng 8003</p>
       </header>
       {error ? (
         <ErrorMessage

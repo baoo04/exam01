@@ -113,7 +113,7 @@ export default function StaffLaptopsPage() {
       <header className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Quản lý laptop &amp; nhập kho</h1>
-          <p className="text-sm text-slate-500">Thêm / sửa / nhập tồn / xóa — qua API Gateway</p>
+          <p className="text-sm text-slate-500">Thêm / sửa / nhập tồn / xóa — API cổng 8001</p>
         </div>
         <button
           type="button"

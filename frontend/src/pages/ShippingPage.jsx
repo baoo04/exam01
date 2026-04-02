@@ -53,7 +53,7 @@ export default function ShippingPage() {
           setError(
             e?.response?.data?.detail ||
               e.message ||
-              "Không thể tải vận chuyển qua API Gateway."
+              "Không kết nối được shipping service."
           );
       } finally {
         if (!cancelled) setLoading(false);
@@ -114,7 +114,7 @@ export default function ShippingPage() {
     <div className="space-y-6">
       <header>
         <h1 className="text-2xl font-bold text-slate-900">Vận chuyển</h1>
-        <p className="text-sm text-slate-500">Vận chuyển qua API Gateway</p>
+        <p className="text-sm text-slate-500">Dịch vụ cổng 8007</p>
       </header>
       {error ? (
         <ErrorMessage

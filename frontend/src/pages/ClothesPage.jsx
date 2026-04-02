@@ -96,7 +96,7 @@ export default function ClothesPage() {
           setError(
             e?.response?.data?.detail ||
               e.message ||
-              "Không tải được quần áo qua API Gateway."
+              "Không kết nối được clothes service."
           );
       } finally {
         if (!cancelled) setLoading(false);
@@ -138,7 +138,8 @@ export default function ClothesPage() {
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Quần áo</h1>
           <p className="text-sm text-slate-500">
-            Thời trang · dữ liệu qua API Gateway — đăng nhập khách để thêm giỏ.
+            Thời trang · API cổng 8008 (PostgreSQL) — đăng nhập khách để thêm
+            giỏ.
           </p>
         </div>
         <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
