@@ -1,0 +1,86 @@
+# Reference mapping (documentation only — routes are built in Java from MicroserviceRegistry).
+# Docker Compose does not ship Eureka/Consul; use http://host:port instead of lb://.
+# With Spring Cloud Netflix Eureka, you would replace each uri with:
+#   uri: lb://laptop-service
+# and register instances under that name.
+
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: api-auth-customer
+          uri: http://customer_service:8003
+          predicates:
+            - Path=/api/auth/customer/**
+          filters:
+            - RewritePath=/api/auth/customer/(?<segment>.*), /api/auth/${segment}
+            - AddRequestHeader=Host, localhost
+
+        - id: api-auth-staff
+          uri: http://staff_service:8004
+          predicates:
+            - Path=/api/auth/staff/**
+          filters:
+            - RewritePath=/api/auth/staff/(?<segment>.*), /api/auth/${segment}
+            - AddRequestHeader=Host, localhost
+
+        - id: laptop-service
+          uri: http://laptop_service:8001
+          predicates:
+            - Path=/api/laptops/**
+          filters:
+            - AddRequestHeader=Host, localhost
+
+        - id: mobile-service
+          uri: http://mobile_service:8002
+          predicates:
+            - Path=/api/mobiles/**
+          filters:
+            - AddRequestHeader=Host, localhost
+
+        - id: clothes-service
+          uri: http://clothes_service:8008
+          predicates:
+            - Path=/api/clothes/**
+          filters:
+            - AddRequestHeader=Host, localhost
+
+        - id: customer-service
+          uri: http://customer_service:8003
+          predicates:
+            - Path=/api/customers/**
+          filters:
+            - AddRequestHeader=Host, localhost
+
+        - id: staff-service
+          uri: http://staff_service:8004
+          predicates:
+            - Path=/api/staff/**
+          filters:
+            - AddRequestHeader=Host, localhost
+
+        - id: order-service
+          uri: http://order_service:8005
+          predicates:
+            - Path=/api/orders/**
+          filters:
+            - AddRequestHeader=Host, localhost
+
+        - id: cart-service
+          uri: http://cart_service:8006
+          predicates:
+            - Path=/api/cart/**
+          filters:
+            - AddRequestHeader=Host, localhost
+
+        - id: shipping-service
+          uri: http://shipping_service:8007
+          predicates:
+            - Path=/api/shipping/**
+          filters:
+            - AddRequestHeader=Host, localhost
+
+        - id: frontend-spa
+          uri: http://frontend:80
+          predicates:
+            - Path=/**

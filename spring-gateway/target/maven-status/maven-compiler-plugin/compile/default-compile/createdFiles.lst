@@ -1,0 +1,4 @@
+com\ecommerce\gateway\GatewayConfiguration.class
+com\ecommerce\gateway\MicroserviceRegistry.class
+com\ecommerce\gateway\ApiGatewayApplication.class
+com\ecommerce\gateway\MicroserviceRegistry$UpstreamRoute.class
